@@ -1,6 +1,5 @@
 import { useState, useEffect, useCallback } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { useAuth } from '../context/AuthContext';
 import { useOffline } from '../context/OfflineContext';
 import { getRecentItems, getCategories, getFolders, togglePinFolder, deleteFolder, updateItem, deleteItem as moveToTrash, createFolder, getStarredItems } from '../services/api';
 import { useSearch } from '../hooks/useSearch';
@@ -9,10 +8,9 @@ import ConfirmModal from '../components/ConfirmModal';
 import { GridSkeleton, ListSkeleton } from '../components/Skeletons';
 
 const Home = () => {
-  const { user, logout } = useAuth();
   const { isOnline } = useOffline();
   const navigate = useNavigate();
-  
+
   const [recentItems, setRecentItems] = useState([]);
   const [starredItems, setStarredItems] = useState([]);
   const [categories, setCategories] = useState([]);
@@ -23,7 +21,7 @@ const Home = () => {
   const [confirmModal, setConfirmModal] = useState({ show: false, type: '', data: null });
   const [newFolderName, setNewFolderName] = useState('');
   const [showFolderInput, setShowFolderInput] = useState(false);
-  
+
   const { query, setQuery, suggestions, fetchSuggestions, performSearch, clearSearch } = useSearch();
 
   useEffect(() => {
@@ -179,7 +177,7 @@ const Home = () => {
       <nav className="bg-white border-b border-slate-200 px-6 py-4">
         <div className="max-w-7xl mx-auto flex items-center justify-between">
           <h1 className="text-xl font-bold text-slate-800">Search Point</h1>
-          
+
           <form onSubmit={handleSearchSubmit} className="flex-1 max-w-xl mx-8 relative">
             <input
               type="text"
@@ -208,12 +206,10 @@ const Home = () => {
               </div>
             )}
           </form>
-          
+
           <div className="flex items-center gap-4">
             {!isOnline && <span className="text-xs bg-yellow-100 text-yellow-700 px-2 py-1 rounded">Offline</span>}
             <Link to="/trash" className="text-slate-600 hover:text-slate-800 text-sm font-medium">🗑️ Trash</Link>
-            <span className="text-slate-600">{user?.email}</span>
-            <button onClick={logout} className="text-slate-600 hover:text-slate-800 text-sm font-medium">Logout</button>
           </div>
         </div>
       </nav>

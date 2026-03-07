@@ -1,12 +1,10 @@
 import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
-import { useAuth } from '../context/AuthContext';
 import { getRecentItems, getCategories, getFolders, togglePinFolder, deleteFolder, updateItem, deleteItem as moveToTrash, createFolder, getStarredItems } from '../services/api';
 import ItemModal from '../components/ItemModal';
 import ConfirmModal from '../components/ConfirmModal';
 
 const Home = () => {
-  const { user, logout } = useAuth();
   const [recentItems, setRecentItems] = useState([]);
   const [starredItems, setStarredItems] = useState([]);
   const [categories, setCategories] = useState([]);
@@ -60,8 +58,8 @@ const Home = () => {
     const itemCount = folder.itemCount || 0;
     setConfirmModal({
       show: true,
-      type: ': {folder',
-      data folder, itemCount }
+      type: 'folder',
+      data: { folder, itemCount }
     });
   };
 
@@ -171,10 +169,6 @@ const Home = () => {
             <Link to="/trash" className="text-slate-600 hover:text-slate-800 text-sm font-medium">
               🗑️ Trash
             </Link>
-            <span className="text-slate-600">{user?.email}</span>
-            <button onClick={logout} className="text-slate-600 hover:text-slate-800 text-sm font-medium">
-              Logout
-            </button>
           </div>
         </div>
       </nav>
@@ -185,9 +179,8 @@ const Home = () => {
             <button
               key={tab}
               onClick={() => setActiveTab(tab)}
-              className={`px-4 py-2 rounded-lg font-medium text-sm transition ${
-                activeTab === tab ? 'bg-blue-600 text-white' : 'bg-white text-slate-600 hover:bg-slate-100'
-              }`}
+              className={`px-4 py-2 rounded-lg font-medium text-sm transition ${activeTab === tab ? 'bg-blue-600 text-white' : 'bg-white text-slate-600 hover:bg-slate-100'
+                }`}
             >
               {tab.charAt(0).toUpperCase() + tab.slice(1)}
             </button>

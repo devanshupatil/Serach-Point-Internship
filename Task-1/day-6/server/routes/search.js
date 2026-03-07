@@ -2,22 +2,21 @@ const express = require('express');
 const router = express.Router();
 const Item = require('../models/Item');
 const Folder = require('../models/Folder');
-const authMiddleware = require('../middleware/authMiddleware');
 
-router.use(authMiddleware);
+const DEFAULT_USER_ID = 'default-user';
 
 router.get('/', async (req, res) => {
   try {
-    const userId = req.user.id;
+    const userId = DEFAULT_USER_ID;
     const { q, type, limit = 20 } = req.query;
-    
+
     if (!q || q.trim().length === 0) {
       return res.json({ success: true, data: { items: [], folders: [], total: 0 } });
     }
-    
+
     const searchRegex = new RegExp(q.trim(), 'i');
     const searchLimit = parseInt(limit);
-    
+
     const [items, folders] = await Promise.all([
       Item.find({
         userId,
@@ -33,7 +32,7 @@ router.get('/', async (req, res) => {
         .limit(searchLimit)
         .populate('folderId', 'name')
         .lean(),
-      
+
       Folder.find({
         userId,
         isArchived: false,
@@ -43,19 +42,19 @@ router.get('/', async (req, res) => {
         .limit(10)
         .lean()
     ]);
-    
+
     const results = {
       items,
       folders,
       total: items.length + folders.length,
       query: q
     };
-    
+
     if (type) {
       results.items = results.items.filter(item => item.type === type);
       results.total = results.items.length + results.folders.length;
     }
-    
+
     res.json({ success: true, data: results });
   } catch (error) {
     res.status(500).json({ success: false, message: error.message });
@@ -64,15 +63,15 @@ router.get('/', async (req, res) => {
 
 router.get('/suggestions', async (req, res) => {
   try {
-    const userId = req.user.id;
+    const userId = DEFAULT_USER_ID;
     const { q, limit = 5 } = req.query;
-    
+
     if (!q || q.trim().length < 2) {
       return res.json({ success: true, data: [] });
     }
-    
+
     const searchRegex = new RegExp(`^${q.trim()}`, 'i');
-    
+
     const [items, folders] = await Promise.all([
       Item.find({
         userId,
@@ -85,7 +84,7 @@ router.get('/suggestions', async (req, res) => {
         .select('title type content')
         .limit(parseInt(limit))
         .lean(),
-      
+
       Folder.find({
         userId,
         isArchived: false,
@@ -95,12 +94,12 @@ router.get('/suggestions', async (req, res) => {
         .limit(parseInt(limit))
         .lean()
     ]);
-    
+
     const suggestions = [
       ...folders.map(f => ({ type: 'folder', name: f.name, id: f._id })),
       ...items.map(i => ({ type: 'item', name: i.title || i.content, id: i._id, itemType: i.type }))
     ];
-    
+
     res.json({ success: true, data: suggestions.slice(0, 10) });
   } catch (error) {
     res.status(500).json({ success: false, message: error.message });

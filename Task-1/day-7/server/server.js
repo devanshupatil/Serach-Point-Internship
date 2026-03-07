@@ -4,7 +4,6 @@ const dotenv = require('dotenv');
 
 dotenv.config();
 
-const authRoutes = require('./routes/auth');
 const itemRoutes = require('./routes/items');
 const folderRoutes = require('./routes/folders');
 const searchRoutes = require('./routes/search');
@@ -15,7 +14,6 @@ app.use(cors());
 app.use(express.json({ limit: '50mb' }));
 app.use(express.urlencoded({ extended: true, limit: '50mb' }));
 
-app.use('/api/auth', authRoutes);
 app.use('/api/items', itemRoutes);
 app.use('/api/folders', folderRoutes);
 app.use('/api/search', searchRoutes);
