@@ -1,16 +1,12 @@
 const express = require('express');
 const router = express.Router();
 const Item = require('../models/Item');
-const authMiddleware = require('../middleware/authMiddleware');
-
-router.use(authMiddleware);
 
 router.get('/recent', async (req, res) => {
   try {
-    const userId = req.user.id;
     const limit = parseInt(req.query.limit) || 20;
     
-    const items = await Item.find({ userId })
+    const items = await Item.find()
       .sort({ createdAt: -1 })
       .limit(limit)
       .populate('folderId', 'name isPinned');
@@ -29,10 +25,9 @@ router.get('/recent', async (req, res) => {
 
 router.get('/', async (req, res) => {
   try {
-    const userId = req.user.id;
     const { type, folderId, category, search } = req.query;
     
-    const query = { userId };
+    const query = {};
     
     if (type) {
       query.type = type;
@@ -91,10 +86,8 @@ router.get('/', async (req, res) => {
 
 router.get('/categories', async (req, res) => {
   try {
-    const userId = req.user.id;
-    
     const categories = await Item.aggregate([
-      { $match: { userId: userId } },
+      { $match: {} },
       {
         $group: {
           _id: '$category',
@@ -135,10 +128,9 @@ router.get('/categories', async (req, res) => {
 
 router.get('/:id', async (req, res) => {
   try {
-    const userId = req.user.id;
     const { id } = req.params;
     
-    const item = await Item.findOne({ _id: id, userId })
+    const item = await Item.findOne({ _id: id })
       .populate('folderId', 'name isPinned');
     
     if (!item) {

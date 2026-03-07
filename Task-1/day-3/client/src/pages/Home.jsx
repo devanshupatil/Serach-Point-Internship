@@ -1,11 +1,9 @@
 import { useEffect, useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { useAuth } from '../context/AuthContext';
 import { getItems, getFolders } from '../services/api';
 import AddItemModal from '../components/AddItemModal';
 
 const Home = () => {
-  const { user, logout, token } = useAuth();
   const [items, setItems] = useState([]);
   const [folders, setFolders] = useState([]);
   const [shareText, setShareText] = useState('');
@@ -14,23 +12,21 @@ const Home = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
 
   const fetchData = async () => {
-    if (token) {
-      try {
-        const [itemsData, foldersData] = await Promise.all([
-          getItems(),
-          getFolders()
-        ]);
-        setItems(itemsData);
-        setFolders(foldersData);
-      } catch (error) {
-        console.error('Failed to fetch data:', error);
-      }
+    try {
+      const [itemsData, foldersData] = await Promise.all([
+        getItems(),
+        getFolders()
+      ]);
+      setItems(itemsData);
+      setFolders(foldersData);
+    } catch (error) {
+      console.error('Failed to fetch data:', error);
     }
   };
 
   useEffect(() => {
     fetchData();
-  }, [token]);
+  }, []);
 
   const handleShare = async () => {
     if (!shareText.trim()) return;
@@ -85,12 +81,6 @@ const Home = () => {
             <span className="text-xl font-bold bg-gradient-to-r from-indigo-600 to-purple-600 bg-clip-text text-transparent">
               KeepBox
             </span>
-            <div className="flex items-center gap-4">
-              <span className="text-gray-600 text-sm">{user?.email}</span>
-              <button onClick={logout} className="px-4 py-2 text-sm font-medium text-gray-700 bg-gray-100 rounded-lg hover:bg-gray-200">
-                Logout
-              </button>
-            </div>
           </div>
         </div>
       </nav>
@@ -230,7 +220,6 @@ const Home = () => {
         )}
       </main>
 
-      {/* Floating Action Button */}
       <motion.button
         whileHover={{ scale: 1.1, rotate: 90 }}
         whileTap={{ scale: 0.9 }}

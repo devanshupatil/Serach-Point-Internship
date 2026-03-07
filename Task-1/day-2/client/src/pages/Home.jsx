@@ -1,20 +1,12 @@
 import { useEffect, useState } from 'react';
 import { motion } from 'framer-motion';
-import { useAuth } from '../context/AuthContext';
 import { getItems } from '../services/api';
 
 const Home = () => {
-  const { user, logout, token } = useAuth();
   const [items, setItems] = useState([]);
   const [shareText, setShareText] = useState('');
   const [shareType, setShareType] = useState('text/plain');
   const [sharing, setSharing] = useState(false);
-
-  useEffect(() => {
-    if (token) {
-      getItems().then(setItems).catch(console.error);
-    }
-  }, [token]);
 
   const handleShare = async () => {
     if (!shareText.trim()) return;
@@ -63,12 +55,6 @@ const Home = () => {
             <span className="text-xl font-bold bg-gradient-to-r from-indigo-600 to-purple-600 bg-clip-text text-transparent">
               KeepBox
             </span>
-            <div className="flex items-center gap-4">
-              <span className="text-gray-600 text-sm">{user?.email}</span>
-              <button onClick={logout} className="px-4 py-2 text-sm font-medium text-gray-700 bg-gray-100 rounded-lg hover:bg-gray-200">
-                Logout
-              </button>
-            </div>
           </div>
         </div>
       </nav>

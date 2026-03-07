@@ -1,11 +1,8 @@
 import { useState, useEffect } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
-import { useAuth } from '../context/AuthContext';
+import { Link } from 'react-router-dom';
 import { getRecentItems, getCategories, getFolders, togglePinFolder, deleteFolder } from '../services/api';
 
 const Home = () => {
-  const { user, logout } = useAuth();
-  const navigate = useNavigate();
   const [recentItems, setRecentItems] = useState([]);
   const [categories, setCategories] = useState([]);
   const [folders, setFolders] = useState({ pinned: [], recent: [] });
@@ -91,15 +88,6 @@ const Home = () => {
       <nav className="bg-white border-b border-slate-200 px-6 py-4">
         <div className="max-w-7xl mx-auto flex items-center justify-between">
           <h1 className="text-xl font-bold text-slate-800">Search Point</h1>
-          <div className="flex items-center gap-4">
-            <span className="text-slate-600">{user?.email}</span>
-            <button
-              onClick={logout}
-              className="text-slate-600 hover:text-slate-800 text-sm font-medium"
-            >
-              Logout
-            </button>
-          </div>
         </div>
       </nav>
 

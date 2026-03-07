@@ -1,15 +1,10 @@
 const express = require('express');
 const router = express.Router();
 const Folder = require('../models/Folder');
-const authMiddleware = require('../middleware/authMiddleware');
-
-router.use(authMiddleware);
 
 router.get('/', async (req, res) => {
   try {
-    const userId = req.user.id;
-    
-    const folders = await Folder.find({ userId })
+    const folders = await Folder.find()
       .sort({ isPinned: -1, updatedAt: -1 });
     
     const pinned = folders.filter(f => f.isPinned);
@@ -34,11 +29,9 @@ router.get('/', async (req, res) => {
 
 router.post('/', async (req, res) => {
   try {
-    const userId = req.user.id;
     const { name, isPinned } = req.body;
     
     const folder = new Folder({
-      userId,
       name,
       isPinned: isPinned || false
     });
@@ -59,10 +52,9 @@ router.post('/', async (req, res) => {
 
 router.put('/:id/pin', async (req, res) => {
   try {
-    const userId = req.user.id;
     const { id } = req.params;
     
-    const folder = await Folder.findOne({ _id: id, userId });
+    const folder = await Folder.findOne({ _id: id });
     
     if (!folder) {
       return res.status(404).json({
@@ -88,10 +80,9 @@ router.put('/:id/pin', async (req, res) => {
 
 router.delete('/:id', async (req, res) => {
   try {
-    const userId = req.user.id;
     const { id } = req.params;
     
-    const folder = await Folder.findOneAndDelete({ _id: id, userId });
+    const folder = await Folder.findOneAndDelete({ _id: id });
     
     if (!folder) {
       return res.status(404).json({
