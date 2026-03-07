@@ -1,7 +1,6 @@
 const express = require('express');
 const router = express.Router();
-const Item = require('../models/Item');
-const Folder = require('../models/Folder');
+const db = require('../utils/db');
 
 const DEFAULT_USER_ID = 'default-user';
 
@@ -14,7 +13,7 @@ router.post('/', async (req, res) => {
       return res.status(400).json({ success: false, message: 'Type, category, and content are required' });
     }
 
-    const item = new Item({
+    const item = db.items.create({
       userId,
       type,
       category,
@@ -22,10 +21,11 @@ router.post('/', async (req, res) => {
       content,
       description: description || '',
       folderId: folderId || null,
-      metadata
+      metadata,
+      isStarred: false,
+      isArchived: false,
+      isTrash: false
     });
-
-    await item.save();
 
     res.status(201).json({ success: true, data: item });
   } catch (error) {
@@ -38,11 +38,16 @@ router.get('/recent', async (req, res) => {
     const userId = DEFAULT_USER_ID;
     const limit = parseInt(req.query.limit) || 20;
 
-    const items = await Item.find({ userId, isTrash: false, isArchived: false })
-      .sort({ createdAt: -1 })
-      .limit(limit)
-      .populate('folderId', 'name isPinned')
-      .lean();
+    const items = db.items.find(i => i.userId === userId && !i.isTrash && !i.isArchived)
+      .sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt))
+      .slice(0, limit);
+
+    items.forEach(item => {
+      if (item.folderId) {
+        const folder = db.folders.findOne(f => f._id === item.folderId);
+        if (folder) item.folder = { name: folder.name, isPinned: folder.isPinned };
+      }
+    });
 
     res.json({ success: true, data: items });
   } catch (error) {
@@ -55,28 +60,29 @@ router.get('/', async (req, res) => {
     const userId = DEFAULT_USER_ID;
     const { type, folderId, category, page = 1, limit = 50 } = req.query;
 
-    const query = { userId, isTrash: false, isArchived: false };
+    let items = db.items.find(i => i.userId === userId && !i.isTrash && !i.isArchived);
 
-    if (type) query.type = type;
-    if (category) query.category = category;
-    if (folderId) query.folderId = folderId;
+    if (type) items = items.filter(i => i.type === type);
+    if (category) items = items.filter(i => i.category === category);
+    if (folderId) items = items.filter(i => i.folderId === folderId);
 
+    items.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
+
+    const total = items.length;
     const skip = (parseInt(page) - 1) * parseInt(limit);
+    const paginatedItems = items.slice(skip, skip + parseInt(limit));
 
-    const [items, total] = await Promise.all([
-      Item.find(query)
-        .sort({ createdAt: -1 })
-        .skip(skip)
-        .limit(parseInt(limit))
-        .populate('folderId', 'name isPinned')
-        .lean(),
-      Item.countDocuments(query)
-    ]);
+    paginatedItems.forEach(item => {
+      if (item.folderId) {
+        const folder = db.folders.findOne(f => f._id === item.folderId);
+        if (folder) item.folder = { name: folder.name, isPinned: folder.isPinned };
+      }
+    });
 
     res.json({
       success: true,
-      data: items,
-      count: items.length,
+      data: paginatedItems,
+      count: paginatedItems.length,
       total,
       page: parseInt(page),
       totalPages: Math.ceil(total / parseInt(limit))
@@ -90,10 +96,8 @@ router.get('/starred', async (req, res) => {
   try {
     const userId = DEFAULT_USER_ID;
 
-    const items = await Item.find({ userId, isStarred: true, isTrash: false })
-      .sort({ updatedAt: -1 })
-      .populate('folderId', 'name isPinned')
-      .lean();
+    const items = db.items.find(i => i.userId === userId && i.isStarred && !i.isTrash)
+      .sort((a, b) => new Date(b.updatedAt) - new Date(a.updatedAt));
 
     res.json({ success: true, data: items });
   } catch (error) {
@@ -105,10 +109,8 @@ router.get('/trash', async (req, res) => {
   try {
     const userId = DEFAULT_USER_ID;
 
-    const items = await Item.find({ userId, isTrash: true })
-      .sort({ deletedAt: -1 })
-      .populate('folderId', 'name')
-      .lean();
+    const items = db.items.find(i => i.userId === userId && i.isTrash)
+      .sort((a, b) => new Date(b.deletedAt) - new Date(a.deletedAt));
 
     res.json({ success: true, data: items });
   } catch (error) {
@@ -119,29 +121,20 @@ router.get('/trash', async (req, res) => {
 router.get('/categories', async (req, res) => {
   try {
     const userId = DEFAULT_USER_ID;
+    const items = db.items.find(i => i.userId === userId && !i.isTrash && !i.isArchived);
 
-    const categories = await Item.aggregate([
-      { $match: { userId: userId, isTrash: false, isArchived: false } },
-      {
-        $group: {
-          _id: '$category',
-          count: { $sum: 1 }
-        }
-      }
-    ]);
+    const counts = items.reduce((acc, item) => {
+      acc[item.category] = (acc[item.category] || 0) + 1;
+      return acc;
+    }, {});
 
     const autoCategories = [
-      { name: 'Images', type: 'image', view: 'grid', count: 0 },
-      { name: 'Documents', type: 'document', view: 'list', count: 0 },
-      { name: 'Links', type: 'link', view: 'preview', count: 0 },
-      { name: 'Videos', type: 'video', view: 'embedded', count: 0 },
-      { name: 'Notes', type: 'note', view: 'list', count: 0 }
+      { name: 'Images', type: 'image', view: 'grid', count: counts['Images'] || 0 },
+      { name: 'Documents', type: 'document', view: 'list', count: counts['Documents'] || 0 },
+      { name: 'Links', type: 'link', view: 'preview', count: counts['Links'] || 0 },
+      { name: 'Videos', type: 'video', view: 'embedded', count: counts['Videos'] || 0 },
+      { name: 'Notes', type: 'note', view: 'list', count: counts['Notes'] || 0 }
     ];
-
-    categories.forEach(cat => {
-      const autoCat = autoCategories.find(ac => ac.name === cat._id);
-      if (autoCat) autoCat.count = cat.count;
-    });
 
     res.json({ success: true, data: autoCategories });
   } catch (error) {
@@ -154,12 +147,15 @@ router.get('/:id', async (req, res) => {
     const userId = DEFAULT_USER_ID;
     const { id } = req.params;
 
-    const item = await Item.findOne({ _id: id, userId })
-      .populate('folderId', 'name isPinned')
-      .lean();
+    const item = db.items.findOne(i => i._id === id && i.userId === userId);
 
     if (!item) {
       return res.status(404).json({ success: false, message: 'Item not found' });
+    }
+
+    if (item.folderId) {
+      const folder = db.folders.findOne(f => f._id === item.folderId);
+      if (folder) item.folder = { name: folder.name, isPinned: folder.isPinned };
     }
 
     res.json({ success: true, data: item });
@@ -172,31 +168,23 @@ router.patch('/:id', async (req, res) => {
   try {
     const userId = DEFAULT_USER_ID;
     const { id } = req.params;
-    const { title, content, description, folderId, isStarred, isArchived, isTrash, metadata, cachedUrl } = req.body;
+    const updateData = req.body;
 
-    const item = await Item.findOne({ _id: id, userId });
+    const item = db.items.findOne(i => i._id === id && i.userId === userId);
 
     if (!item) {
       return res.status(404).json({ success: false, message: 'Item not found' });
     }
 
-    if (title !== undefined) item.title = title;
-    if (content !== undefined) item.content = content;
-    if (description !== undefined) item.description = description;
-    if (folderId !== undefined) item.folderId = folderId;
-    if (isStarred !== undefined) item.isStarred = isStarred;
-    if (isArchived !== undefined) item.isArchived = isArchived;
-    if (metadata !== undefined) item.metadata = metadata;
-    if (cachedUrl !== undefined) item.cachedUrl = cachedUrl;
-
-    if (isTrash !== undefined) {
-      item.isTrash = isTrash;
-      item.deletedAt = isTrash ? new Date() : null;
+    if (updateData.isTrash === true) {
+      updateData.deletedAt = new Date();
+    } else if (updateData.isTrash === false) {
+      updateData.deletedAt = null;
     }
 
-    await item.save();
+    const updatedItem = db.items.findOneAndUpdate(i => i._id === id, updateData);
 
-    res.json({ success: true, data: item });
+    res.json({ success: true, data: updatedItem });
   } catch (error) {
     res.status(500).json({ success: false, message: error.message });
   }
@@ -209,24 +197,19 @@ router.delete('/:id', async (req, res) => {
     const { permanent } = req.query;
 
     if (permanent === 'true') {
-      const item = await Item.findOneAndDelete({ _id: id, userId });
-
-      if (!item) {
-        return res.status(404).json({ success: false, message: 'Item not found' });
-      }
-
+      const item = db.items.findOneAndDelete(i => i._id === id && i.userId === userId);
+      if (!item) return res.status(404).json({ success: false, message: 'Item not found' });
       return res.json({ success: true, message: 'Item permanently deleted' });
     }
 
-    const item = await Item.findOne({ _id: id, userId });
+    const updatedItem = db.items.findOneAndUpdate(
+      i => i._id === id && i.userId === userId,
+      { isTrash: true, deletedAt: new Date() }
+    );
 
-    if (!item) {
+    if (!updatedItem) {
       return res.status(404).json({ success: false, message: 'Item not found' });
     }
-
-    item.isTrash = true;
-    item.deletedAt = new Date();
-    await item.save();
 
     res.json({ success: true, message: 'Item moved to trash' });
   } catch (error) {
@@ -239,17 +222,16 @@ router.post('/:id/restore', async (req, res) => {
     const userId = DEFAULT_USER_ID;
     const { id } = req.params;
 
-    const item = await Item.findOne({ _id: id, userId, isTrash: true });
+    const updatedItem = db.items.findOneAndUpdate(
+      i => i._id === id && i.userId === userId && i.isTrash,
+      { isTrash: false, deletedAt: null }
+    );
 
-    if (!item) {
+    if (!updatedItem) {
       return res.status(404).json({ success: false, message: 'Item not found in trash' });
     }
 
-    item.isTrash = false;
-    item.deletedAt = null;
-    await item.save();
-
-    res.json({ success: true, data: item });
+    res.json({ success: true, data: updatedItem });
   } catch (error) {
     res.status(500).json({ success: false, message: error.message });
   }
@@ -258,9 +240,7 @@ router.post('/:id/restore', async (req, res) => {
 router.delete('/trash/empty', async (req, res) => {
   try {
     const userId = DEFAULT_USER_ID;
-
-    await Item.deleteMany({ userId, isTrash: true });
-
+    db.items.deleteMany(i => i.userId === userId && i.isTrash);
     res.json({ success: true, message: 'Trash emptied' });
   } catch (error) {
     res.status(500).json({ success: false, message: error.message });

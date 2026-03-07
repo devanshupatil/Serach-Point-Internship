@@ -1,154 +1,112 @@
 const express = require('express');
 const router = express.Router();
-const Item = require('../models/Item');
+const db = require('../utils/db');
+
+const DEFAULT_USER_ID = 'default-user';
 
 router.get('/recent', async (req, res) => {
   try {
     const limit = parseInt(req.query.limit) || 20;
-    
-    const items = await Item.find()
-      .sort({ createdAt: -1 })
-      .limit(limit)
-      .populate('folderId', 'name isPinned');
-    
-    res.json({
-      success: true,
-      data: items
+
+    const items = db.items.find(i => i.userId === DEFAULT_USER_ID && !i.isTrash && !i.isArchived)
+      .sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt))
+      .slice(0, limit);
+
+    // Simulate populate
+    items.forEach(item => {
+      if (item.folderId) {
+        const folder = db.folders.findOne(f => f._id === item.folderId);
+        if (folder) item.folder = { name: folder.name, isPinned: folder.isPinned };
+      }
     });
+
+    res.json({ success: true, data: items });
   } catch (error) {
-    res.status(500).json({
-      success: false,
-      message: error.message
-    });
+    res.status(500).json({ success: false, message: error.message });
   }
 });
 
 router.get('/', async (req, res) => {
   try {
     const { type, folderId, category, search } = req.query;
-    
-    const query = {};
-    
-    if (type) {
-      query.type = type;
-    }
-    
-    if (category) {
-      query.category = category;
-    }
-    
-    if (folderId) {
-      query.folderId = folderId;
-    }
-    
+
+    let items = db.items.find(i => i.userId === DEFAULT_USER_ID && !i.isTrash && !i.isArchived);
+
+    if (type) items = items.filter(i => i.type === type);
+    if (category) items = items.filter(i => i.category === category);
+    if (folderId) items = items.filter(i => i.folderId === folderId);
+
     if (search) {
-      query.$or = [
-        { title: { $regex: search, $options: 'i' } },
-        { content: { $regex: search, $options: 'i' } }
-      ];
+      const searchLower = search.toLowerCase();
+      items = items.filter(i =>
+        (i.title && i.title.toLowerCase().includes(searchLower)) ||
+        (i.content && i.content.toLowerCase().includes(searchLower))
+      );
     }
-    
-    const items = await Item.find(query)
-      .sort({ createdAt: -1 })
-      .populate('folderId', 'name isPinned');
-    
+
+    items.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
+
     const groupedItems = {
       all: items,
       byType: {},
       byCategory: {}
     };
-    
+
     items.forEach(item => {
-      if (!groupedItems.byType[item.type]) {
-        groupedItems.byType[item.type] = [];
-      }
+      if (!groupedItems.byType[item.type]) groupedItems.byType[item.type] = [];
       groupedItems.byType[item.type].push(item);
-      
-      if (!groupedItems.byCategory[item.category]) {
-        groupedItems.byCategory[item.category] = [];
-      }
+
+      if (!groupedItems.byCategory[item.category]) groupedItems.byCategory[item.category] = [];
       groupedItems.byCategory[item.category].push(item);
     });
-    
-    res.json({
-      success: true,
-      data: items,
-      grouped: groupedItems,
-      count: items.length
-    });
+
+    res.json({ success: true, data: items, grouped: groupedItems, count: items.length });
   } catch (error) {
-    res.status(500).json({
-      success: false,
-      message: error.message
-    });
+    res.status(500).json({ success: false, message: error.message });
   }
 });
 
 router.get('/categories', async (req, res) => {
   try {
-    const categories = await Item.aggregate([
-      { $match: {} },
-      {
-        $group: {
-          _id: '$category',
-          count: { $sum: 1 },
-          items: { $push: '$$ROOT' }
-        }
-      },
-      { $sort: { count: -1 } }
-    ]);
-    
+    const items = db.items.find(i => i.userId === DEFAULT_USER_ID && !i.isTrash && !i.isArchived);
+
+    const counts = items.reduce((acc, item) => {
+      acc[item.category] = (acc[item.category] || 0) + 1;
+      return acc;
+    }, {});
+
     const autoCategories = [
-      { name: 'Images', type: 'image', view: 'grid', count: 0 },
-      { name: 'Documents', type: 'document', view: 'list', count: 0 },
-      { name: 'Links', type: 'link', view: 'preview', count: 0 },
-      { name: 'Videos', type: 'video', view: 'embedded', count: 0 },
-      { name: 'Notes', type: 'note', view: 'list', count: 0 }
+      { name: 'Images', type: 'image', view: 'grid', count: counts['Images'] || 0 },
+      { name: 'Documents', type: 'document', view: 'list', count: counts['Documents'] || 0 },
+      { name: 'Links', type: 'link', view: 'preview', count: counts['Links'] || 0 },
+      { name: 'Videos', type: 'video', view: 'embedded', count: counts['Videos'] || 0 },
+      { name: 'Notes', type: 'note', view: 'list', count: counts['Notes'] || 0 }
     ];
-    
-    for (const cat of categories) {
-      const autoCat = autoCategories.find(ac => ac.name === cat._id);
-      if (autoCat) {
-        autoCat.count = cat.count;
-        autoCat.items = cat.items.slice(0, 10);
-      }
-    }
-    
-    res.json({
-      success: true,
-      data: autoCategories
-    });
+
+    res.json({ success: true, data: autoCategories });
   } catch (error) {
-    res.status(500).json({
-      success: false,
-      message: error.message
-    });
+    res.status(500).json({ success: false, message: error.message });
   }
 });
 
 router.get('/:id', async (req, res) => {
   try {
     const { id } = req.params;
-    
-    const item = await Item.findOne({ _id: id })
-      .populate('folderId', 'name isPinned');
-    
+
+    const item = db.items.findOne(i => i._id === id && i.userId === DEFAULT_USER_ID);
+
     if (!item) {
-      return res.status(404).json({
-        success: false,
-        message: 'Item not found'
-      });
+      return res.status(404).json({ success: false, message: 'Item not found' });
     }
-    
-    res.json({
-      success: true,
-      data: item
-    });
+
+    if (item.folderId) {
+      const folder = db.folders.findOne(f => f._id === item.folderId);
+      if (folder) item.folder = { name: folder.name, isPinned: folder.isPinned };
+    }
+
+    res.json({ success: true, data: item });
   } catch (error) {
-    res.status(500).json({
-      success: false,
-      message: error.message
-    });
+    res.status(500).json({ success: false, message: error.message });
   }
 });
 

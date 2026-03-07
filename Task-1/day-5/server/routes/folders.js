@@ -1,7 +1,6 @@
 const express = require('express');
 const router = express.Router();
-const Folder = require('../models/Folder');
-const Item = require('../models/Item');
+const db = require('../utils/db');
 
 const DEFAULT_USER_ID = 'default-user';
 
@@ -9,24 +8,27 @@ router.get('/', async (req, res) => {
   try {
     const userId = DEFAULT_USER_ID;
 
-    const folders = await Folder.find({ userId, isArchived: false })
-      .sort({ isPinned: -1, updatedAt: -1 });
+    const folders = db.folders.find(f => f.userId === userId && !f.isArchived)
+      .sort((a, b) => {
+        if (a.isPinned && !b.isPinned) return -1;
+        if (!a.isPinned && b.isPinned) return 1;
+        return new Date(b.updatedAt) - new Date(a.updatedAt);
+      });
+
+    folders.forEach(folder => {
+      folder.itemCount = db.items.countDocuments(i => i.userId === userId && i.folderId === folder._id && !i.isTrash);
+    });
 
     const pinned = folders.filter(f => f.isPinned);
     const recent = folders.filter(f => !f.isPinned);
 
-    const foldersWithCount = await Promise.all(folders.map(async (folder) => {
-      const itemCount = await Item.countDocuments({ userId, folderId: folder._id, isTrash: false });
-      return { ...folder.toObject(), itemCount };
-    }));
-
     res.json({
       success: true,
       data: {
-        all: foldersWithCount,
-        pinned: foldersWithCount.filter(f => f.isPinned),
-        recent: foldersWithCount.filter(f => !f.isPinned),
-        count: foldersWithCount.length
+        all: folders,
+        pinned,
+        recent,
+        count: folders.length
       }
     });
   } catch (error) {
@@ -43,13 +45,12 @@ router.post('/', async (req, res) => {
       return res.status(400).json({ success: false, message: 'Folder name is required' });
     }
 
-    const folder = new Folder({
+    const folder = db.folders.create({
       userId,
       name,
-      isPinned: isPinned || false
+      isPinned: isPinned || false,
+      isArchived: false
     });
-
-    await folder.save();
 
     res.status(201).json({ success: true, data: folder });
   } catch (error) {
@@ -62,15 +63,15 @@ router.get('/:id', async (req, res) => {
     const userId = DEFAULT_USER_ID;
     const { id } = req.params;
 
-    const folder = await Folder.findOne({ _id: id, userId });
+    const folder = db.folders.findOne(f => f._id === id && f.userId === userId);
 
     if (!folder) {
       return res.status(404).json({ success: false, message: 'Folder not found' });
     }
 
-    const itemCount = await Item.countDocuments({ userId, folderId: id, isTrash: false });
+    const itemCount = db.items.countDocuments(i => i.userId === userId && i.folderId === id && !i.isTrash);
 
-    res.json({ success: true, data: { ...folder.toObject(), itemCount } });
+    res.json({ success: true, data: { ...folder, itemCount } });
   } catch (error) {
     res.status(500).json({ success: false, message: error.message });
   }
@@ -82,19 +83,20 @@ router.patch('/:id', async (req, res) => {
     const { id } = req.params;
     const { name, isPinned, isArchived } = req.body;
 
-    const folder = await Folder.findOne({ _id: id, userId });
+    const folder = db.folders.findOne(f => f._id === id && f.userId === userId);
 
     if (!folder) {
       return res.status(404).json({ success: false, message: 'Folder not found' });
     }
 
-    if (name !== undefined) folder.name = name;
-    if (isPinned !== undefined) folder.isPinned = isPinned;
-    if (isArchived !== undefined) folder.isArchived = isArchived;
+    const update = {};
+    if (name !== undefined) update.name = name;
+    if (isPinned !== undefined) update.isPinned = isPinned;
+    if (isArchived !== undefined) update.isArchived = isArchived;
 
-    await folder.save();
+    const updatedFolder = db.folders.findOneAndUpdate(f => f._id === id, update);
 
-    res.json({ success: true, data: folder });
+    res.json({ success: true, data: updatedFolder });
   } catch (error) {
     res.status(500).json({ success: false, message: error.message });
   }
@@ -106,13 +108,13 @@ router.delete('/:id', async (req, res) => {
     const { id } = req.params;
     const { moveItems } = req.body;
 
-    const folder = await Folder.findOne({ _id: id, userId });
+    const folder = db.folders.findOne(f => f._id === id && f.userId === userId);
 
     if (!folder) {
       return res.status(404).json({ success: false, message: 'Folder not found' });
     }
 
-    const itemCount = await Item.countDocuments({ userId, folderId: id, isTrash: false });
+    const itemCount = db.items.countDocuments(i => i.userId === userId && i.folderId === id && !i.isTrash);
 
     if (itemCount > 0 && !moveItems) {
       return res.status(400).json({
@@ -123,12 +125,12 @@ router.delete('/:id', async (req, res) => {
     }
 
     if (moveItems) {
-      await Item.updateMany({ userId, folderId: id }, { folderId: null });
+      db.items.updateMany(i => i.userId === userId && i.folderId === id, { folderId: null });
     } else {
-      await Item.deleteMany({ userId, folderId: id });
+      db.items.deleteMany(i => i.userId === userId && i.folderId === id);
     }
 
-    await Folder.findByIdAndDelete(id);
+    db.folders.findOneAndDelete(f => f._id === id);
 
     res.json({ success: true, message: 'Folder deleted' });
   } catch (error) {
@@ -141,16 +143,15 @@ router.put('/:id/pin', async (req, res) => {
     const userId = DEFAULT_USER_ID;
     const { id } = req.params;
 
-    const folder = await Folder.findOne({ _id: id, userId });
+    const folder = db.folders.findOne(f => f._id === id && f.userId === userId);
 
     if (!folder) {
       return res.status(404).json({ success: false, message: 'Folder not found' });
     }
 
-    folder.isPinned = !folder.isPinned;
-    await folder.save();
+    const updatedFolder = db.folders.findOneAndUpdate(f => f._id === id, { isPinned: !folder.isPinned });
 
-    res.json({ success: true, data: folder });
+    res.json({ success: true, data: updatedFolder });
   } catch (error) {
     res.status(500).json({ success: false, message: error.message });
   }

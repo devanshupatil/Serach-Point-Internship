@@ -1,7 +1,6 @@
 const express = require('express');
 const router = express.Router();
-const Item = require('../models/Item');
-const Folder = require('../models/Folder');
+const db = require('../utils/db');
 
 const DEFAULT_USER_ID = 'default-user';
 
@@ -14,48 +13,46 @@ router.get('/', async (req, res) => {
       return res.json({ success: true, data: { items: [], folders: [], total: 0 } });
     }
 
-    const searchRegex = new RegExp(q.trim(), 'i');
+    const queryStr = q.trim().toLowerCase();
     const searchLimit = parseInt(limit);
 
-    const [items, folders] = await Promise.all([
-      Item.find({
-        userId,
-        isTrash: false,
-        $or: [
-          { title: searchRegex },
-          { content: searchRegex },
-          { description: searchRegex },
-          { 'metadata.tags': searchRegex }
-        ]
-      })
-        .sort({ createdAt: -1 })
-        .limit(searchLimit)
-        .populate('folderId', 'name')
-        .lean(),
+    let items = db.items.find(i =>
+      i.userId === userId &&
+      !i.isTrash &&
+      !i.isArchived &&
+      (
+        (i.title && i.title.toLowerCase().includes(queryStr)) ||
+        (i.content && i.content.toLowerCase().includes(queryStr)) ||
+        (i.description && i.description.toLowerCase().includes(queryStr))
+      )
+    );
 
-      Folder.find({
-        userId,
-        isArchived: false,
-        name: searchRegex
-      })
-        .sort({ isPinned: -1, updatedAt: -1 })
-        .limit(10)
-        .lean()
-    ]);
+    if (type) items = items.filter(i => i.type === type);
 
-    const results = {
-      items,
-      folders,
-      total: items.length + folders.length,
-      query: q
-    };
+    const folders = db.folders.find(f =>
+      f.userId === userId &&
+      !f.isArchived &&
+      f.name.toLowerCase().includes(queryStr)
+    ).slice(0, 10);
 
-    if (type) {
-      results.items = results.items.filter(item => item.type === type);
-      results.total = results.items.length + results.folders.length;
-    }
+    const limitedItems = items.slice(0, searchLimit);
 
-    res.json({ success: true, data: results });
+    limitedItems.forEach(item => {
+      if (item.folderId) {
+        const folder = db.folders.findOne(f => f._id === item.folderId);
+        if (folder) item.folder = { name: folder.name };
+      }
+    });
+
+    res.json({
+      success: true,
+      data: {
+        items: limitedItems,
+        folders,
+        total: items.length + folders.length,
+        query: q
+      }
+    });
   } catch (error) {
     res.status(500).json({ success: false, message: error.message });
   }
@@ -70,30 +67,20 @@ router.get('/suggestions', async (req, res) => {
       return res.json({ success: true, data: [] });
     }
 
-    const searchRegex = new RegExp(`^${q.trim()}`, 'i');
+    const queryStr = q.trim().toLowerCase();
 
-    const [items, folders] = await Promise.all([
-      Item.find({
-        userId,
-        isTrash: false,
-        $or: [
-          { title: searchRegex },
-          { content: searchRegex }
-        ]
-      })
-        .select('title type content')
-        .limit(parseInt(limit))
-        .lean(),
+    const items = db.items.find(i =>
+      i.userId === userId &&
+      !i.isTrash &&
+      !i.isArchived &&
+      ((i.title && i.title.toLowerCase().includes(queryStr)) || (i.content && i.content.toLowerCase().includes(queryStr)))
+    ).slice(0, parseInt(limit));
 
-      Folder.find({
-        userId,
-        isArchived: false,
-        name: searchRegex
-      })
-        .select('name')
-        .limit(parseInt(limit))
-        .lean()
-    ]);
+    const folders = db.folders.find(f =>
+      f.userId === userId &&
+      !f.isArchived &&
+      f.name.toLowerCase().includes(queryStr)
+    ).slice(0, parseInt(limit));
 
     const suggestions = [
       ...folders.map(f => ({ type: 'folder', name: f.name, id: f._id })),
