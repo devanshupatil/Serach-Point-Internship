@@ -1,0 +1,14 @@
+{
+  "items": [],
+  "folders": [
+    {
+      "userId": "default-user",
+      "name": "Hello",
+      "isPinned": true,
+      "isArchived": false,
+      "_id": "1772866581390",
+      "createdAt": "2026-03-07T06:56:21.390Z",
+      "updatedAt": "2026-03-07T07:26:23.920Z"
+    }
+  ]
+}
