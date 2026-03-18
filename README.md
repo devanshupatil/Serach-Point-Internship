@@ -1,181 +1,394 @@
+<!-- ====== PROJECT BADGE ====== -->
 <div align="center">
 
-# 📦 KeepBox
+![KeepBox Banner](https://raw.githubusercontent.com/andreasbm/readme/master/assets/lines/rainbow.png)
 
-### *Save Anything. Find Everything. Forget Nothing.*
+<p align="center">
+  <img src="https://img.shields.io/badge/React-19.2-blue?style=for-the-badge&logo=react&logoColor=61DAFB" alt="React">
+  <img src="https://img.shields.io/badge/Vite-8.0-646CFF?style=for-the-badge&logo=vite&logoColor=FFD43B" alt="Vite">
+  <img src="https://img.shields.io/badge/Tailwind%20CSS-3.4-38B2AC?style=for-the-badge&logo=tailwind-css&logoColor=38B2AC" alt="Tailwind CSS">
+  <img src="https://img.shields.io/badge/React%20Router-6.30-CA4245?style=for-the-badge&logo=react-router&logoColor=CA4245" alt="React Router">
+  <img src="https://img.shields.io/badge/Vitest-4.1-green?style=for-the-badge&logo=vitest&logoColor=6B9A42" alt="Vitest">
+</p>
 
-[![React](https://img.shields.io/badge/React-18.2-61DAFB?style=for-the-badge&logo=react&logoColor=white)](https://reactjs.org/)
-[![Vite](https://img.shields.io/badge/Vite-5.0-646CFF?style=for-the-badge&logo=vite&logoColor=white)](https://vitejs.dev/)
-[![Express](https://img.shields.io/badge/Express-4.18-000000?style=for-the-badge&logo=express&logoColor=white)](https://expressjs.com/)
-[![Tailwind CSS](https://img.shields.io/badge/Tailwind_CSS-3.4-06B6D4?style=for-the-badge&logo=tailwindcss&logoColor=white)](https://tailwindcss.com/)
-[![Capacitor](https://img.shields.io/badge/Capacitor-Android-119EFF?style=for-the-badge&logo=capacitor&logoColor=white)](https://capacitorjs.com/)
+<h1 align="center">
+  <picture>
+    <source srcset="https://fonts.gstatic.com/s/googlefonts/pressstart2p/v15/e3t4euO8T-267oIAQAu6jDQyK3nVivM.woff2" media="(prefers-color-scheme: dark)">
+    <img src="https://cdn-icons-png.flaticon.com/512/2965/2965327.png" width="48" height="48" alt="🔐">
+  </picture>
+  <span>KeepBox</span>
+</h1>
 
----
+<p align="center">
+  <strong>Your Personal Cloud Storage — Save everything that matters.</strong>
+</p>
 
-**KeepBox** is a personal content-saving & organizing app — a smarter replacement for messaging yourself on WhatsApp.  
-Save links, images, documents, videos, and notes with **zero friction** via Android's Share Sheet or manual input.
+> 🔗 Links · 🖼️ Images · 📄 Documents · 🎥 Videos · 📝 Notes — all in one secure place.
+
+<p align="center">
+  <a href="#-quick-start"><strong>🚀 Quick Start</strong></a>
+  &nbsp;&nbsp;|&nbsp;&nbsp;
+  <a href="#-features"><strong>⭐ Features</strong></a>
+  &nbsp;&nbsp;|&nbsp;&nbsp;
+  <a href="#-screens"><strong>🖥️ Screens</strong></a>
+  &nbsp;&nbsp;|&nbsp;&nbsp;
+  <a href="#-tech-stack"><strong>⚙️ Tech Stack</strong></a>
+  &nbsp;&nbsp;|&nbsp;&nbsp;
+  <a href="#-project-structure"><strong>📁 Structure</strong></a>
+  &nbsp;&nbsp;|&nbsp;&nbsp;
+  <a href="#-scripts"><strong>📜 Scripts</strong></a>
+</p>
+
+![KeepBox Banner](https://raw.githubusercontent.com/andreasbm/readme/master/assets/lines/rainbow.png)
 
 </div>
 
 ---
 
-## ✨ Features
+## 📌 Table of Contents
+
+- [🔑 Key Features](#-key-features)
+- [🚀 Quick Start](#-quick-start)
+- [⭐ Features](#-features)
+- [🖥️ Screens](#-screens)
+- [⚙️ Tech Stack](#-tech-stack)
+- [📁 Project Structure](#-project-structure)
+- [📜 Scripts](#-scripts)
+- [🎨 Design Tokens](#-design-tokens)
+
+---
+
+## 🔑 Key Features
 
 | Feature | Description |
 |---------|-------------|
-| 🔐 **Auth & Security** | Signup, Login, OTP verification, JWT-based session |
-| 📤 **Android Share Intent** | Share from any app → KeepBox auto-saves instantly |
-| ➕ **Manual Save** | Add links, images, docs, videos & notes via forms |
-| 🏠 **Smart Home Feed** | Pinned folders, categories, recently saved timeline |
-| ✏️ **Full CRUD** | Create, Read, Update, Delete with folder organization |
-| 🔍 **Global Search** | Search across titles, descriptions & folder names |
-| 📴 **Offline Support** | Cached data available offline with sync-on-reconnect |
-| ⏰ **Reminders** | Set date/time reminders on any saved item |
-| 🗄️ **Archive & Trash** | Archive for declutter, Trash with restore & auto-purge |
-| ⚙️ **Settings** | Dark/Light mode, storage stats, notification controls |
-| 💬 **Help & Feedback** | Bug reports, feature requests, FAQ |
+| 🔐 **Auth System** | Login / Signup with localStorage session |
+| 📂 **File Management** | Save links, images, documents, notes with categories |
+| 🔍 **Search** | Debounced full-text search across all items |
+| 📁 **Folders** | Organize items into custom folders |
+| 🏷️ **Categories** | Browse by Links, Images, Documents, Videos, Notes |
+| ⭐ **Starred Items** | Star/unstar any item for quick access |
+| 📦 **Archive** | Archive items and restore them later |
+| 🔔 **Reminders** | Set date/time reminders on any item |
+| 🗑️ **Trash** | Soft delete with restore or permanent delete |
+| 🌙 **Dark Mode** | Full dark theme with persistence |
+| 📱 **Responsive** | Mobile-friendly responsive design |
+| ⚡ **Fast** | Built with Vite — instant HMR |
 
 ---
 
-## 🏗️ Project Structure
-
-```
-Task-1/
-├── day-1/          🔐 Auth + Foundation (Login / Signup / JWT)
-│   └── client/         React + Vite frontend
-│
-├── day-2/          📤 Android Share Intent + Auto Save
-│   ├── client/         Share capture UI
-│   └── server/         Save API + type detection
-│
-├── day-3/          ➕ Manual Add + Create (CRUD - Create)
-│   ├── client/         Dynamic forms (Link, Doc, Image)
-│   └── server/         File upload + folder creation
-│
-├── day-4/          🏠 Home, Categories & Read (CRUD - Read)
-│   ├── client/         Home feed, category views, folder views
-│   └── server/         Items & folders listing APIs
-│
-├── day-5/          ✏️ Update + Delete (CRUD - Update/Delete)
-│   ├── client/         Edit, move, star, delete actions
-│   └── server/         PATCH & DELETE endpoints
-│
-├── day-6/          🔍 Search + Offline + Performance
-│   ├── client/         Global search, lazy loading, skeletons
-│   └── server/         Search API + filters
-│
-├── day-7/          ⏰ Reminders + Archive
-│   ├── client/         Reminder picker, archive section
-│   └── server/         Reminder & archive APIs
-│
-└── day-8/          🗑️ Trash + Settings + Help & Feedback
-                        Trash system, settings UI, feedback forms
-```
-
----
-
-## 🛠️ Tech Stack
-
-<div align="center">
-
-| Layer | Technology |
-|-------|-----------|
-| **Frontend** | React 18 · Vite · React Router v6 |
-| **Styling** | Tailwind CSS 3 |
-| **Backend** | Node.js · Express 4 |
-| **Auth** | JWT (jsonwebtoken) · bcrypt |
-| **Mobile** | Capacitor (Android) |
-| **Database** | MongoDB / Supabase (PostgreSQL) |
-
-</div>
-
----
-
-## 🚀 Getting Started
-
-### Prerequisites
-
-- **Node.js** ≥ 18
-- **npm** ≥ 9
-
-### Run Any Day's Module
+## 🚀 Quick Start
 
 ```bash
-# 1. Clone the repo
-git clone https://github.com/devanshupatil/Serach-Point-Internship.git
-cd Serach-Point-Internship
+# 1. Navigate to the project
+cd Task-1/keepbox-app
 
-# 2. Start the backend (Days 2–7)
-cd Task-1/day-{N}/server
+# 2. Install dependencies
 npm install
+
+# 3. Start the development server
 npm run dev
 
-# 3. Start the frontend (any day)
-cd Task-1/day-{N}/client
-npm install
-npm run dev
-```
+# 4. Open in browser
+# → http://localhost:5173
 
-> Replace `{N}` with the day number (1–8).
+# Build for production
+npm run build
 
----
+# Preview production build
+npm run preview
 
-## 📅 Development Roadmap
-
-```
-Day 1  ██████████████████████████████  Auth + Foundation
-Day 2  ██████████████████████████████  Share Intent + Auto Save
-Day 3  ██████████████████████████████  Manual Add + Create
-Day 4  ██████████████████████████████  Home + Categories + Read
-Day 5  ██████████████████████████████  Update + Delete
-Day 6  ██████████████████████████████  Search + Offline + Performance
-Day 7  ██████████████████████████████  Reminders + Archive
-Day 8  ██████████████████████████████  Trash + Settings + Feedback
+# Run tests
+npm test
 ```
 
 ---
 
-## 📄 API Overview
+## ⭐ Features
 
-| Method | Endpoint | Day | Purpose |
-|--------|----------|-----|---------|
-| `POST` | `/auth/signup` | 1 | Register new user |
-| `POST` | `/auth/login` | 1 | Login with credentials |
-| `POST` | `/auth/verify-otp` | 1 | Verify OTP |
-| `GET` | `/auth/me` | 1 | Get current user |
-| `POST` | `/items` | 2, 3 | Save item (auto/manual) |
-| `GET` | `/items?type=...` | 4 | Get items by category |
-| `GET` | `/items?folderId=...` | 4 | Get items in folder |
-| `PATCH` | `/items/:id` | 5 | Update item |
-| `DELETE` | `/items/:id` | 5 | Delete item |
-| `GET` | `/items/search?q=...` | 6 | Search items |
-| `PATCH` | `/items/:id` | 7 | Set reminder / archive |
-| `GET` | `/folders` | 4 | List all folders |
-| `POST` | `/folders` | 3 | Create folder |
-| `POST` | `/feedback` | 8 | Submit feedback |
+### 🏠 Dashboard
+- Personalized greeting based on time of day
+- Pinned folders grid with item counts
+- Category browse cards with gradient backgrounds
+- Recently saved items table
+
+### 🔍 Search
+- Instant debounced search (300ms)
+- Filter chips: All, Links, Images, Documents, Videos, Notes
+- Search across title, description, and content
+
+### 📂 Folders & Categories
+- Create and manage custom folders
+- Browse by category type
+- Items table with icons, dates, and actions
+
+### ✏️ Item Management
+- Tab-switcher Add modal (Link, Image, Document, Note)
+- Edit modal for title, description, and folder assignment
+- Context menu (right-click) with ActionSheet
+- Star, Archive, Reminder, Delete actions
+
+### 🗑️ Archive & Trash
+- Archive items for later
+- Restore from archive
+- Soft delete → Trash
+- Restore or permanently delete from trash
+- Empty trash with confirmation
+
+### 🔔 Reminders
+- Set date + time reminders on any item
+- Reminders page listing all upcoming items
+- Edit or clear reminders
+
+### ⚙️ Settings
+- Dark mode toggle with system persistence
+- Notification toggles
+- Export data
+- Sign out
+
+### 💬 Help & Feedback
+- Bug reports, feature requests, other
+- Optional email field
+- Success confirmation state
 
 ---
 
-## 🤝 Contributing
+## 🖥️ Screens
 
-Contributions, issues, and feature requests are welcome!
-
-1. Fork the project
-2. Create your feature branch (`git checkout -b feature/amazing-feature`)
-3. Commit your changes (`git commit -m 'feat: add amazing feature'`)
-4. Push to the branch (`git push origin feature/amazing-feature`)
-5. Open a Pull Request
+| Screen | Route | Description |
+|--------|-------|-------------|
+| 🔐 **Login** | `/login` | Split-panel login with brand panel |
+| 📝 **Signup** | `/signup` | Split-panel signup with gradient branding |
+| 🏠 **Dashboard** | `/` | Home with folders, categories, recent items |
+| 📁 **Files** | `/category/all` | All non-archived, non-deleted items |
+| 🏷️ **Category** | `/category/:type` | Items filtered by category |
+| 📂 **Folder** | `/folder/:id` | Items within a specific folder |
+| 🔍 **Search** | `/search` | Search interface with filters |
+| 📦 **Archive** | `/archive` | Archived items list |
+| 🔔 **Reminders** | `/reminders` | Items with active reminders |
+| 🗑️ **Trash** | `/trash` | Soft-deleted items |
+| ⚙️ **Settings** | `/settings` | Theme, notifications, account |
+| ❓ **Help** | `/help` | Feedback form |
 
 ---
 
-## 📜 License
+## ⚙️ Tech Stack
 
-This project is part of the **Search Point Internship** program.
+```
+Frontend
+├── React 19.2          — UI library
+├── Vite 8.0            — Build tool & dev server
+├── React Router v6     — Client-side routing
+├── Tailwind CSS 3.4    — Utility-first CSS
+├── Vitest 4.1          — Unit testing framework
+├── React Testing Lib   — Component testing
+├── Inter Font          — Google Fonts display font
+└── Material Symbols    — Google Icons
+```
+
+### Architecture
+
+```
+keepbox-app/
+├── src/
+│   ├── main.jsx              # Entry point
+│   ├── App.jsx               # Route definitions
+│   ├── index.css             # Tailwind + global styles
+│   ├── test-setup.js         # Vitest setup
+│   ├── context/
+│   │   └── AuthContext.jsx   # User session state
+│   ├── services/
+│   │   └── storage.js        # All localStorage operations
+│   ├── components/
+│   │   ├── AppLayout.jsx     # Sidebar + header shell
+│   │   ├── ProtectedRoute.jsx # Auth guard
+│   │   ├── ItemCard.jsx      # Table row for items
+│   │   ├── AddItemModal.jsx  # Tab-switcher add form
+│   │   ├── EditModal.jsx     # Edit title/desc/folder
+│   │   ├── ReminderModal.jsx # Date + time picker
+│   │   ├── ActionSheet.jsx   # Right-click context menu
+│   │   ├── Toast.jsx         # Transient notifications
+│   │   ├── Skeletons.jsx     # Loading placeholders
+│   │   └── ErrorBoundary.jsx # React error boundary
+│   └── pages/
+│       ├── Login.jsx
+│       ├── Signup.jsx
+│       ├── Home.jsx
+│       ├── CategoryView.jsx
+│       ├── FolderView.jsx
+│       ├── SearchPage.jsx
+│       ├── ArchivePage.jsx
+│       ├── ReminderPage.jsx
+│       ├── TrashPage.jsx
+│       ├── Settings.jsx
+│       └── HelpFeedback.jsx
+├── tailwind.config.js
+├── vite.config.js
+├── index.html
+└── package.json
+```
+
+---
+
+## 📜 Scripts
+
+| Command | Description |
+|---------|-------------|
+| `npm run dev` | Start Vite dev server on port 5173 |
+| `npm run build` | Build for production (outputs to `dist/`) |
+| `npm run preview` | Preview production build locally |
+| `npm test` | Run Vitest test suite once |
+| `npm run test:watch` | Run Vitest in watch mode |
+
+---
+
+## 🎨 Design Tokens
+
+### Colors
+
+```css
+/* Primary */
+--primary:        #135bec     /* Brand blue */
+
+/* Backgrounds */
+--bg-light:       #f6f6f8     /* Light mode background */
+--bg-dark:        #101622     /* Dark mode background */
+
+/* Surfaces */
+--surface:        #ffffff     /* Card / modal background */
+--surface-dark:   #1e293b     /* Dark mode surface */
+
+/* Borders */
+--border-default: #f1f5f9     /* Light mode borders */
+--border-dark:    #1e293b     /* Dark mode borders */
+
+/* Text */
+--text-primary:   #0f172a     /* Primary text color */
+--text-secondary: #94a3b8     /* Muted / secondary text */
+```
+
+### Typography
+
+| Element | Font | Weight | Size |
+|---------|------|--------|------|
+| Display | Inter | 900 (Black) | 2xl+ |
+| Heading | Inter | 800 (ExtraBold) | xl |
+| Subheading | Inter | 600 (SemiBold) | lg |
+| Body | Inter | 400 (Regular) | sm |
+| Caption | Inter | 400 (Regular) | xs |
+
+### Spacing
+
+Uses Tailwind's default spacing scale. Key layout areas:
+- **Sidebar**: `w-56` (224px)
+- **Header**: `h-14` (56px)
+- **Content padding**: `p-6` (24px)
+- **Card padding**: `p-4` to `p-6` (16-24px)
+- **Gap between cards**: `gap-3` (12px)
+
+### Border Radius
+
+| Token | Value |
+|-------|-------|
+| `DEFAULT` | 4px |
+| `lg` | 8px |
+| `xl` | 12px |
+| `2xl` | 16px |
+| `full` | 9999px |
+
+### Shadows
+
+| Name | Value |
+|------|-------|
+| Subtle | `shadow-md shadow-primary/25` |
+| Medium | `shadow-lg shadow-primary/30` |
+| Heavy | `shadow-2xl` |
+
+### Gradients
+
+| Name | Colors |
+|------|--------|
+| Primary | `#135bec` → `#0ea5e9` |
+| Brand panel | `#2563eb` → `#0ea5e9` via `#135bec` |
+| Category cards | Dynamic per category (see `Home.jsx`) |
+
+---
+
+## 🌐 Data Storage
+
+All data is stored in **localStorage** under these keys:
+
+| Key | Description |
+|-----|-------------|
+| `keepbox_user` | Logged-in user object `{ name, email }` |
+| `keepbox_items` | Array of all saved items |
+| `keepbox_folders` | Array of user-created folders |
+| `keepbox_settings` | App settings `{ theme, notifications, reminderToggle }` |
+| `keepbox_feedback` | Array of submitted feedback entries |
+
+### Item Schema
+
+```js
+{
+  id: "uuid-v4",
+  type: "link" | "image" | "document" | "video" | "note",
+  category: "Links" | "Images" | "Documents" | "Videos" | "Notes",
+  autoCategory: string,
+  title: string,
+  content: string,          // URL, note text, etc.
+  description: string,
+  folderId: string | null,
+  starred: boolean,
+  archived: boolean,
+  deleted: boolean,
+  reminder: { date: string, time: string } | null,
+  metadata: object,
+  createdAt: "ISO date string",
+  updatedAt: "ISO date string"
+}
+```
+
+---
+
+## 🧪 Testing
+
+The project uses **Vitest** with **React Testing Library** and **jsdom**.
+
+### Running Tests
+
+```bash
+# Run all tests once
+npm test
+
+# Run tests in watch mode
+npm run test:watch
+
+# Run specific test file
+npm test -- Login
+npm test -- Home
+npm test -- SearchPage
+```
+
+### Test Structure
+
+Tests follow the pattern of write-fail-first → implement → verify-pass:
+- `src/services/storage.test.js` — localStorage CRUD operations
+- `src/context/AuthContext.test.jsx` — auth state management
+- `src/components/AppLayout.test.jsx` — layout rendering
+- `src/pages/Login.test.jsx` — login form behavior
+- `src/pages/Home.test.jsx` — dashboard rendering
+- `src/pages/SearchPage.test.jsx` — search filtering
 
 ---
 
 <div align="center">
 
-**Built with ❤️ by [Devanshu Patil](https://github.com/devanshupatil)**
+![KeepBox Banner](https://raw.githubusercontent.com/andreasbm/readme/master/assets/lines/rainbow.png)
+
+**Built with ❤️ using React + Vite + Tailwind CSS**
+
+*KeepBox — Save everything that matters.*
+
+![KeepBox Banner](https://raw.githubusercontent.com/andreasbm/readme/master/assets/lines/rainbow.png)
 
 </div>
