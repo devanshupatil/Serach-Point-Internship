@@ -26,22 +26,22 @@ export default function ItemCard({ item, onUpdate, onDelete }) {
         onContextMenu={handleContextMenu}
         className="hover:bg-slate-50 dark:hover:bg-slate-800/50 transition-colors cursor-pointer group border-b border-slate-100 dark:border-slate-800"
       >
-        <td className="px-6 py-3.5">
+        <td className="px-4 sm:px-6 py-3.5">
           <div className="flex items-center gap-3">
             <div className={`w-8 h-8 rounded-lg flex items-center justify-center flex-shrink-0 ${meta.bg}`}>
               <span className={`material-symbols-outlined text-[18px] ${meta.color}`}>{meta.icon}</span>
             </div>
             <div className="min-w-0">
-              <p className="text-sm font-semibold text-slate-900 dark:text-white truncate">{item.title}</p>
-              {item.description && <p className="text-xs text-slate-400 truncate">{item.description}</p>}
+              <p className="text-sm font-semibold text-slate-900 dark:text-white truncate max-w-[120px] sm:max-w-none">{item.title}</p>
+              {item.description && <p className="text-xs text-slate-400 truncate hidden sm:block">{item.description}</p>}
             </div>
           </div>
         </td>
-        <td className="px-6 py-3.5 text-xs text-slate-400 capitalize">{item.type}</td>
-        <td className="px-6 py-3.5 text-xs text-slate-400">
+        <td className="px-4 sm:px-6 py-3.5 text-xs text-slate-400 capitalize hidden sm:table-cell">{item.type}</td>
+        <td className="px-4 sm:px-6 py-3.5 text-xs text-slate-400 hidden md:table-cell">
           {new Date(item.updatedAt).toLocaleDateString()}
         </td>
-        <td className="px-6 py-3.5 text-right">
+        <td className="px-4 sm:px-6 py-3.5 text-right">
           <button
             onClick={(e) => { e.stopPropagation(); setAnchorPos({ x: e.clientX, y: e.clientY }); setShowActions(true) }}
             className="p-1 opacity-0 group-hover:opacity-100 hover:text-primary transition-all"

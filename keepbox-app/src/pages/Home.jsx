@@ -34,10 +34,10 @@ export default function Home() {
   const greeting = hour < 12 ? 'Good morning' : hour < 17 ? 'Good afternoon' : 'Good evening'
 
   return (
-    <div className="p-6 max-w-6xl mx-auto space-y-8">
-      <div className="flex justify-between items-start">
+    <div className="p-4 sm:p-6 max-w-6xl mx-auto space-y-6 sm:space-y-8">
+      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-start gap-3">
         <div>
-          <h2 className="text-2xl font-black text-slate-900 dark:text-white">
+          <h2 className="text-xl sm:text-2xl font-black text-slate-900 dark:text-white">
             {greeting}, {user?.name?.split(' ')[0]} 👋
           </h2>
           <p className="text-sm text-slate-400 mt-1">Dashboard</p>
@@ -54,7 +54,7 @@ export default function Home() {
           <h3 className="text-sm font-bold text-slate-900 dark:text-white">📌 Pinned Folders</h3>
           <button onClick={() => navigate('/category/all')} className="text-xs font-semibold text-primary hover:underline">View all</button>
         </div>
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+        <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3">
           {folders.slice(0, 4).map((folder, i) => (
             <Link key={folder.id} to={`/folder/${folder.id}`}
               className="bg-white dark:bg-slate-900 p-4 rounded-xl border border-slate-100 dark:border-slate-800 hover:shadow-md transition-shadow group cursor-pointer">
@@ -75,15 +75,15 @@ export default function Home() {
 
       <section>
         <h3 className="text-sm font-bold text-slate-900 dark:text-white mb-3">🗂 Browse by Category</h3>
-        <div className="grid grid-cols-2 lg:grid-cols-5 gap-3">
+        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-3">
           {CATEGORIES.map(({ type, label, sub, icon, from, to }) => (
             <button key={type} onClick={() => navigate(`/category/${type}`)}
               style={{ background: `linear-gradient(135deg, ${from}, ${to})` }}
               className="relative overflow-hidden rounded-2xl aspect-[4/3] p-4 flex flex-col justify-between group cursor-pointer">
               <span className="material-symbols-outlined text-white/50 group-hover:text-white/80 transition-opacity text-3xl">{icon}</span>
               <div>
-                <p className="text-base font-black text-white">{label}</p>
-                <p className="text-xs text-white/70">{sub}</p>
+                <p className="text-sm sm:text-base font-black text-white">{label}</p>
+                <p className="text-xs text-white/70 hidden sm:block">{sub}</p>
               </div>
               <div className="absolute -right-3 -bottom-3 opacity-10 group-hover:scale-110 transition-transform">
                 <span className="material-symbols-outlined text-[80px] text-white">{icon}</span>
@@ -95,34 +95,36 @@ export default function Home() {
 
       <section>
         <h3 className="text-sm font-bold text-slate-900 dark:text-white mb-3">🕐 Recently Saved</h3>
-        <div className="bg-white dark:bg-slate-900 rounded-2xl border border-slate-100 dark:border-slate-800 overflow-hidden">
+        <div className="bg-white dark:bg-slate-900 rounded-2xl border border-slate-100 dark:border-slate-800 overflow-hidden overflow-x-auto">
           {loading ? (
             <div>{[...Array(4)].map((_, i) => <RowSkeleton key={i} />)}</div>
           ) : recent.length === 0 ? (
-            <div className="flex flex-col items-center justify-center py-16 text-center">
+            <div className="flex flex-col items-center justify-center py-16 text-center px-4">
               <span className="material-symbols-outlined text-5xl text-slate-200 mb-3">inbox</span>
               <p className="text-sm font-semibold text-slate-400">No items saved yet</p>
               <p className="text-xs text-slate-300 mt-1">Click "Add New" to save your first item</p>
             </div>
           ) : (
-            <table className="w-full">
-              <thead className="bg-slate-50 dark:bg-slate-800/50 border-b border-slate-100 dark:border-slate-800">
-                <tr className="text-[10px] uppercase tracking-wider font-bold text-slate-400">
-                  <th className="px-6 py-3 text-left">Name</th>
-                  <th className="px-6 py-3 text-left">Type</th>
-                  <th className="px-6 py-3 text-left">Modified</th>
-                  <th className="px-6 py-3" />
-                </tr>
-              </thead>
-              <tbody>
-                {recent.map(item => (
-                  <ItemCard key={item.id} item={item}
-                    onUpdate={refresh}
-                    onDelete={(id) => { deleteItem(id); refresh() }}
-                  />
-                ))}
-              </tbody>
-            </table>
+            <div className="min-w-[600px]">
+              <table className="w-full">
+                <thead className="bg-slate-50 dark:bg-slate-800/50 border-b border-slate-100 dark:border-slate-800">
+                  <tr className="text-[10px] uppercase tracking-wider font-bold text-slate-400">
+                    <th className="px-6 py-3 text-left">Name</th>
+                    <th className="px-6 py-3 text-left">Type</th>
+                    <th className="px-6 py-3 text-left">Modified</th>
+                    <th className="px-6 py-3" />
+                  </tr>
+                </thead>
+                <tbody>
+                  {recent.map(item => (
+                    <ItemCard key={item.id} item={item}
+                      onUpdate={refresh}
+                      onDelete={(id) => { deleteItem(id); refresh() }}
+                    />
+                  ))}
+                </tbody>
+              </table>
+            </div>
           )}
         </div>
       </section>

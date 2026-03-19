@@ -33,7 +33,7 @@ export default function SearchPage() {
   }
 
   return (
-    <div className="p-6 max-w-3xl mx-auto">
+    <div className="p-4 sm:p-6 max-w-3xl mx-auto">
       <h2 className="text-xl font-black text-slate-900 dark:text-white mb-5">Search</h2>
 
       <div className="relative mb-4">
@@ -63,19 +63,21 @@ export default function SearchPage() {
       )}
 
       {results.length > 0 && (
-        <div className="bg-white dark:bg-slate-900 rounded-2xl border border-slate-100 dark:border-slate-800 overflow-hidden">
-          <table className="w-full">
-            <tbody>
-              {results.map(item => (
-                <ItemCard key={item.id} item={item} onUpdate={refresh} onDelete={(id) => { deleteItem(id); refresh() }} />
-              ))}
-            </tbody>
-          </table>
+        <div className="bg-white dark:bg-slate-900 rounded-2xl border border-slate-100 dark:border-slate-800 overflow-hidden overflow-x-auto">
+          <div className="min-w-[600px]">
+            <table className="w-full">
+              <tbody>
+                {results.map(item => (
+                  <ItemCard key={item.id} item={item} onUpdate={refresh} onDelete={(id) => { deleteItem(id); refresh() }} />
+                ))}
+              </tbody>
+            </table>
+          </div>
         </div>
       )}
 
       {query.trim() && results.length === 0 && (
-        <div className="flex flex-col items-center justify-center py-16 text-center">
+        <div className="flex flex-col items-center justify-center py-16 text-center px-4">
           <span className="material-symbols-outlined text-5xl text-slate-200 mb-3">search_off</span>
           <p className="text-sm font-semibold text-slate-400">No results for "{query}"</p>
           <p className="text-xs text-slate-300 mt-1">Try different keywords or a different filter</p>

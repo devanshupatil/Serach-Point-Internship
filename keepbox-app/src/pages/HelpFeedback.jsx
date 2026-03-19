@@ -22,7 +22,7 @@ export default function HelpFeedback() {
 
   if (submitted) {
     return (
-      <div className="p-6 max-w-2xl mx-auto flex flex-col items-center justify-center py-24 text-center">
+      <div className="p-4 sm:p-6 max-w-2xl mx-auto flex flex-col items-center justify-center py-16 sm:py-24 text-center">
         <div className="w-16 h-16 bg-emerald-100 dark:bg-emerald-900/30 rounded-full flex items-center justify-center mb-4">
           <span className="material-symbols-outlined text-emerald-500 text-3xl">check_circle</span>
         </div>
@@ -37,10 +37,10 @@ export default function HelpFeedback() {
   }
 
   return (
-    <div className="p-6 max-w-2xl mx-auto">
+    <div className="p-4 sm:p-6 max-w-2xl mx-auto">
       <h2 className="text-xl font-black text-slate-900 dark:text-white mb-6">❓ Help & Feedback</h2>
 
-      <div className="bg-white dark:bg-slate-900 rounded-2xl border border-slate-100 dark:border-slate-800 p-6">
+      <div className="bg-white dark:bg-slate-900 rounded-2xl border border-slate-100 dark:border-slate-800 p-4 sm:p-6">
         <form onSubmit={handleSubmit} className="space-y-5">
           <div>
             <label className="block text-[10px] font-bold text-slate-400 uppercase tracking-wide mb-2">Type</label>

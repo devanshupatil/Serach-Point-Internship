@@ -55,7 +55,7 @@ export default function Settings() {
   const handleLogout = () => { logout(); navigate('/login') }
 
   return (
-    <div className="p-6 max-w-2xl mx-auto">
+    <div className="p-4 sm:p-6 max-w-2xl mx-auto">
       <h2 className="text-xl font-black text-slate-900 dark:text-white mb-6">⚙️ Settings</h2>
 
       <div className="space-y-4">

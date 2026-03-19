@@ -12,13 +12,13 @@ export default function ArchivePage() {
   const restore = (id) => { updateItem(id, { archived: false }); load() }
 
   return (
-    <div className="p-6 max-w-4xl mx-auto">
+    <div className="p-4 sm:p-6 max-w-4xl mx-auto">
       <h2 className="text-xl font-black text-slate-900 dark:text-white mb-5">📦 Archive</h2>
       <div className="bg-white dark:bg-slate-900 rounded-2xl border border-slate-100 dark:border-slate-800 overflow-hidden">
         {loading ? (
           [...Array(3)].map((_, i) => <RowSkeleton key={i} />)
         ) : items.length === 0 ? (
-          <div className="flex flex-col items-center justify-center py-20 text-center">
+          <div className="flex flex-col items-center justify-center py-20 text-center px-4">
             <span className="material-symbols-outlined text-5xl text-slate-200 mb-3">archive</span>
             <p className="text-sm font-semibold text-slate-400">Archive is empty</p>
             <p className="text-xs text-slate-300 mt-1">Right-click any item and choose Archive</p>
@@ -26,13 +26,13 @@ export default function ArchivePage() {
         ) : (
           <div className="divide-y divide-slate-100 dark:divide-slate-800">
             {items.map(item => (
-              <div key={item.id} className="flex items-center justify-between px-6 py-4 hover:bg-slate-50 dark:hover:bg-slate-800/50">
-                <div>
-                  <p className="text-sm font-semibold text-slate-900 dark:text-white">{item.title}</p>
+              <div key={item.id} className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 px-4 sm:px-6 py-4 hover:bg-slate-50 dark:hover:bg-slate-800/50">
+                <div className="min-w-0">
+                  <p className="text-sm font-semibold text-slate-900 dark:text-white truncate">{item.title}</p>
                   <p className="text-xs text-slate-400 mt-0.5 capitalize">{item.type} · {item.category}</p>
                 </div>
                 <button onClick={() => restore(item.id)}
-                  className="text-xs text-primary font-semibold hover:underline px-3 py-1.5 rounded-lg hover:bg-blue-50 dark:hover:bg-blue-900/20 transition-colors">
+                  className="text-xs text-primary font-semibold hover:underline px-3 py-1.5 rounded-lg hover:bg-blue-50 dark:hover:bg-blue-900/20 transition-colors whitespace-nowrap">
                   Restore
                 </button>
               </div>

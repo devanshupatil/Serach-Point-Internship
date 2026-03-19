@@ -14,7 +14,7 @@ export default function Login() {
   }
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-bg-light dark:bg-bg-dark p-4">
+    <div className="min-h-screen flex items-center justify-center bg-bg-light dark:bg-bg-dark p-4 sm:p-6">
       <div className="flex w-full max-w-2xl rounded-2xl overflow-hidden shadow-2xl">
         <div className="hidden md:flex w-52 flex-shrink-0 flex-col justify-between p-7 bg-gradient-to-br from-blue-700 via-primary to-sky-500 relative overflow-hidden">
           <div className="absolute w-40 h-40 bg-white/5 rounded-full -bottom-10 -left-10" />
@@ -34,7 +34,7 @@ export default function Login() {
           </div>
         </div>
 
-        <div className="flex-1 bg-white dark:bg-slate-900 p-8 flex flex-col justify-center">
+        <div className="flex-1 bg-white dark:bg-slate-900 p-6 sm:p-8 flex flex-col justify-center">
           <h2 className="text-xl font-black text-slate-900 dark:text-white mb-1">Welcome back</h2>
           <p className="text-xs text-slate-400 mb-6">Sign in to continue to KeepBox</p>
 

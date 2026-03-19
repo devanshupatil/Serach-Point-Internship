@@ -20,8 +20,8 @@ export default function TrashPage() {
   }
 
   return (
-    <div className="p-6 max-w-4xl mx-auto">
-      <div className="flex items-center justify-between mb-5">
+    <div className="p-4 sm:p-6 max-w-4xl mx-auto">
+      <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between mb-5 gap-3">
         <h2 className="text-xl font-black text-slate-900 dark:text-white">🗑️ Trash</h2>
         {items.length > 0 && (
           <button onClick={emptyTrash}
@@ -32,19 +32,19 @@ export default function TrashPage() {
       </div>
       <div className="bg-white dark:bg-slate-900 rounded-2xl border border-slate-100 dark:border-slate-800 overflow-hidden">
         {items.length === 0 ? (
-          <div className="flex flex-col items-center justify-center py-20 text-center">
+          <div className="flex flex-col items-center justify-center py-20 text-center px-4">
             <span className="material-symbols-outlined text-5xl text-slate-200 mb-3">delete_outline</span>
             <p className="text-sm font-semibold text-slate-400">Trash is empty</p>
           </div>
         ) : (
           <div className="divide-y divide-slate-100 dark:divide-slate-800">
             {items.map(item => (
-              <div key={item.id} className="flex items-center justify-between px-6 py-4 hover:bg-slate-50 dark:hover:bg-slate-800/50">
-                <div>
-                  <p className="text-sm font-semibold text-slate-500 line-through">{item.title}</p>
+              <div key={item.id} className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 px-4 sm:px-6 py-4 hover:bg-slate-50 dark:hover:bg-slate-800/50">
+                <div className="min-w-0">
+                  <p className="text-sm font-semibold text-slate-500 line-through truncate">{item.title}</p>
                   <p className="text-xs text-slate-400 mt-0.5 capitalize">{item.type}</p>
                 </div>
-                <div className="flex gap-2">
+                <div className="flex gap-2 flex-wrap">
                   <button onClick={() => restore(item.id)} className="text-xs text-primary font-semibold px-3 py-1.5 rounded-lg hover:bg-blue-50 dark:hover:bg-blue-900/20 transition-colors">Restore</button>
                   <button onClick={() => permDelete(item.id)} className="text-xs text-red-500 font-semibold px-3 py-1.5 rounded-lg hover:bg-red-50 dark:hover:bg-red-900/20 transition-colors">Delete forever</button>
                 </div>
