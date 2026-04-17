@@ -1,0 +1,448 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>KeepBox Documentation</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { 
+            font-family: 'Segoe UI', Arial, sans-serif; 
+            line-height: 1.6; 
+            color: #333; 
+            max-width: 800px; 
+            margin: 0 auto; 
+            padding: 40px;
+        }
+        h1 { 
+            font-size: 28px; 
+            border-bottom: 3px solid #135bec; 
+            padding-bottom: 10px; 
+            margin-bottom: 20px;
+            color: #135bec;
+        }
+        h2 { 
+            font-size: 22px; 
+            margin: 30px 0 15px;
+            color: #0f172a;
+            border-left: 4px solid #135bec;
+            padding-left: 12px;
+        }
+        h3 { 
+            font-size: 18px; 
+            margin: 25px 0 10px;
+            color: #334155;
+        }
+        p { margin: 10px 0; }
+        ul, ol { margin: 10px 0 10px 25px; }
+        li { margin: 5px 0; }
+        table { 
+            width: 100%; 
+            border-collapse: collapse; 
+            margin: 15px 0;
+        }
+        th, td { 
+            border: 1px solid #ddd; 
+            padding: 10px 12px; 
+            text-align: left;
+        }
+        th { background: #f5f5f5; font-weight: 600; }
+        code { 
+            background: #f4f4f4; 
+            padding: 2px 6px; 
+            border-radius: 3px;
+            font-family: 'Consolas', monospace;
+        }
+        pre { 
+            background: #1e293b; 
+            color: #e2e8f0;
+            padding: 15px; 
+            border-radius: 6px;
+            overflow-x: auto;
+            margin: 15px 0;
+        }
+        pre code { background: none; padding: 0; }
+        .badge {
+            display: inline-block;
+            background: #135bec;
+            color: white;
+            padding: 3px 10px;
+            border-radius: 15px;
+            font-size: 12px;
+            margin-right: 5px;
+        }
+        hr { border: none; border-top: 1px solid #ddd; margin: 30px 0; }
+        .header-info { 
+            background: #f8fafc; 
+            padding: 15px; 
+            border-radius: 8px; 
+            margin-bottom: 30px;
+        }
+        .header-info p { margin: 5px 0; font-size: 14px; }
+        .section { margin: 20px 0; }
+    </style>
+</head>
+<body>
+    <h1>KeepBox Documentation</h1>
+    
+    <div class="header-info">
+        <p><strong>Version:</strong> 1.0</p>
+        <p><strong>Date:</strong> April 2026</p>
+        <p><strong>Project:</strong> KeepBox - Personal Cloud Storage Application</p>
+    </div>
+
+    <hr>
+
+    <h2>1. Project Overview</h2>
+
+    <h3>1.1 Introduction</h3>
+    <p>KeepBox is a personal cloud storage web application that allows users to save and organize various types of content including links, images, documents, videos, and notes. The application provides a modern, responsive interface with features like folder organization, search, reminders, and dark mode support.</p>
+
+    <h3>1.2 Technology Stack</h3>
+    <table>
+        <tr><th>Technology</th><th>Version</th><th>Purpose</th></tr>
+        <tr><td>React</td><td>19.2.4</td><td>UI Library</td></tr>
+        <tr><td>React DOM</td><td>19.2.4</td><td>React renderer</td></tr>
+        <tr><td>React Router</td><td>6.30.3</td><td>Client-side routing</td></tr>
+        <tr><td>Vite</td><td>8.0.0</td><td>Build tool & dev server</td></tr>
+        <tr><td>Tailwind CSS</td><td>3.4.19</td><td>Utility-first CSS</td></tr>
+        <tr><td>Vitest</td><td>4.1.0</td><td>Testing framework</td></tr>
+        <tr><td>ESLint</td><td>9.39.4</td><td>Code linting</td></tr>
+    </table>
+
+    <h3>1.3 Project Structure</h3>
+    <pre><code>keepbox-app/
+├── public/
+│   └── favicon.svg
+├── src/
+│   ├── main.jsx              # Application entry point
+│   ├── App.jsx               # Route definitions
+│   ├── index.css             # Global styles
+│   ├── test-setup.js        # Vitest configuration
+│   ├── context/
+│   │   └── AuthContext.jsx  # Authentication context
+│   ├── services/
+│   │   └── storage.js       # LocalStorage operations
+│   ├── components/
+│   │   ├── AddItemModal.jsx
+│   │   ├── AppLayout.jsx
+│   │   ├── ActionSheet.jsx
+│   │   ├── EditModal.jsx
+│   │   ├── ErrorBoundary.jsx
+│   │   ├── ItemCard.jsx
+│   │   ├── ProtectedRoute.jsx
+│   │   ├── ReminderModal.jsx
+│   │   ├── Skeletons.jsx
+│   │   ├── Toast.jsx
+│   │   └── index.css
+│   └── pages/
+│       ├── ArchivePage.jsx
+│       ├── CategoryView.jsx
+│       ├── FolderView.jsx
+│       ├── HelpFeedback.jsx
+│       ├── Home.jsx
+│       ├── Login.jsx
+│       ├── ReminderPage.jsx
+│       ├── SearchPage.jsx
+│       ├── Settings.jsx
+│       ├── Signup.jsx
+│       └── TrashPage.jsx
+├── dist/                     # Production build
+├── index.html
+├── package.json
+├── tailwind.config.js
+├── vite.config.js
+├── eslint.config.js
+└── postcss.config.js</code></pre>
+
+    <hr>
+
+    <h2>2. Features</h2>
+
+    <h3>2.1 Authentication System</h3>
+    <ul>
+        <li><strong>Login:</strong> Email/password authentication with localStorage session</li>
+        <li><strong>Signup:</strong> New user registration</li>
+        <li><strong>Session Management:</strong> Persistent login via localStorage</li>
+    </ul>
+
+    <h3>2.2 File Management</h3>
+    <table>
+        <tr><th>Type</th><th>Icon</th><th>Description</th></tr>
+        <tr><td>Links</td><td>link</td><td>Save URLs and web resources</td></tr>
+        <tr><td>Images</td><td>image</td><td>Store photos and graphics</td></tr>
+        <tr><td>Documents</td><td>description</td><td>PDFs and documents</td></tr>
+        <tr><td>Videos</td><td>movie</td><td>Video clips and recordings</td></tr>
+        <tr><td>Notes</td><td>sticky_note_2</td><td>Quick notes and text</td></tr>
+    </table>
+
+    <h3>2.3 Core Features</h3>
+    <ul>
+        <li><strong>Folders:</strong> Create and manage custom folders</li>
+        <li><strong>Categories:</strong> Browse items by type</li>
+        <li><strong>Search:</strong> Full-text search with 300ms debounce</li>
+        <li><strong>Starred Items:</strong> Quick access to important items</li>
+        <li><strong>Archive:</strong> Soft delete with restore capability</li>
+        <li><strong>Trash:</strong> Soft delete with permanent delete option</li>
+        <li><strong>Reminders:</strong> Date/time reminders on any item</li>
+        <li><strong>Dark Mode:</strong> Full dark theme with system persistence</li>
+        <li><strong>Responsive Design:</strong> Mobile-friendly layout</li>
+    </ul>
+
+    <hr>
+
+    <h2>3. Design System</h2>
+
+    <h3>3.1 Color Palette</h3>
+    <table>
+        <tr><th>Color Name</th><th>Value</th><th>Usage</th></tr>
+        <tr><td>Primary</td><td>#135bec</td><td>Brand blue, buttons, links</td></tr>
+        <tr><td>BG Light</td><td>#f6f6f8</td><td>Light mode background</td></tr>
+        <tr><td>BG Dark</td><td>#101622</td><td>Dark mode background</td></tr>
+        <tr><td>Surface</td><td>#ffffff</td><td>Cards, modals (light)</td></tr>
+        <tr><td>Surface Dark</td><td>#1e293b</td><td>Cards, modals (dark)</td></tr>
+        <tr><td>Border Default</td><td>#f1f5f9</td><td>Light mode borders</td></tr>
+        <tr><td>Border Dark</td><td>#1e293b</td><td>Dark mode borders</td></tr>
+        <tr><td>Text Primary</td><td>#0f172a</td><td>Primary text</td></tr>
+        <tr><td>Text Secondary</td><td>#94a3b8</td><td>Muted text</td></tr>
+    </table>
+
+    <h3>3.2 Category Colors</h3>
+    <table>
+        <tr><th>Category</th><th>From</th><th>To</th></tr>
+        <tr><td>Links</td><td>#2563eb</td><td>#0ea5e9</td></tr>
+        <tr><td>Images</td><td>#e11d48</td><td>#f43f5e</td></tr>
+        <tr><td>Documents</td><td>#d97706</td><td>#f59e0b</td></tr>
+        <tr><td>Videos</td><td>#334155</td><td>#475569</td></tr>
+        <tr><td>Notes</td><td>#7c3aed</td><td>#8b5cf6</td></tr>
+    </table>
+
+    <h3>3.3 Typography</h3>
+    <table>
+        <tr><th>Element</th><th>Font</th><th>Weight</th><th>Size</th></tr>
+        <tr><td>Display</td><td>Inter</td><td>900 (Black)</td><td>2xl+</td></tr>
+        <tr><td>Heading</td><td>Inter</td><td>800 (ExtraBold)</td><td>xl</td></tr>
+        <tr><td>Subheading</td><td>Inter</td><td>600 (SemiBold)</td><td>lg</td></tr>
+        <tr><td>Body</td><td>Inter</td><td>400 (Regular)</td><td>sm</td></tr>
+        <tr><td>Caption</td><td>Inter</td><td>400 (Regular)</td><td>xs</td></tr>
+    </table>
+
+    <h3>3.4 Spacing</h3>
+    <ul>
+        <li>Sidebar: 224px (w-56)</li>
+        <li>Header: 56px (h-14)</li>
+        <li>Content padding: 24px (p-6)</li>
+        <li>Card padding: 16-24px (p-4 to p-6)</li>
+        <li>Card gap: 12px (gap-3)</li>
+    </ul>
+
+    <h3>3.5 Border Radius</h3>
+    <table>
+        <tr><th>Token</th><th>Value</th></tr>
+        <tr><td>DEFAULT</td><td>4px</td></tr>
+        <tr><td>lg</td><td>8px</td></tr>
+        <tr><td>xl</td><td>12px</td></tr>
+        <tr><td>2xl</td><td>16px</td></tr>
+        <tr><td>full</td><td>9999px</td></tr>
+    </table>
+
+    <hr>
+
+    <h2>4. Data Storage</h2>
+
+    <h3>4.1 LocalStorage Keys</h3>
+    <table>
+        <tr><th>Key</th><th>Description</th></tr>
+        <tr><td>keepbox_user</td><td>Logged-in user object { name, email }</td></tr>
+        <tr><td>keepbox_items</td><td>Array of all saved items</td></tr>
+        <tr><td>keepbox_folders</td><td>Array of user-created folders</td></tr>
+        <tr><td>keepbox_settings</td><td>App settings { theme, notifications, reminderToggle }</td></tr>
+        <tr><td>keepbox_feedback</td><td>Array of submitted feedback</td></tr>
+    </table>
+
+    <h3>4.2 Item Schema</h3>
+    <pre><code>{
+  id: "uuid-v4",                          // Unique identifier
+  type: "link|image|document|video|note", // Item type
+  category: "Links|Images|Documents|...", // Category display
+  autoCategory: string,                   // Auto-assigned category
+  title: string,                          // Item title
+  content: string,                        // URL, note text, etc.
+  description: string,                   // Optional description
+  folderId: string | null,               // Parent folder ID
+  starred: boolean,                      // Starred status
+  archived: boolean,                      // Archived status
+  deleted: boolean,                       // Soft delete status
+  reminder: { date: string, time: string } | null,
+  metadata: object,                       // Additional metadata
+  createdAt: "ISO date string",          // Creation timestamp
+  updatedAt: "ISO date string"            // Last update timestamp
+}</code></pre>
+
+    <hr>
+
+    <h2>5. API Reference</h2>
+
+    <h3>5.1 Storage Service</h3>
+    <pre><code>// Get all items
+const items = getItems()
+
+// Add new item
+const newItem = addItem({
+  type: 'link',
+  title: 'My Link',
+  content: 'https://example.com',
+  category: 'Links'
+})
+
+// Update item
+const updated = updateItem(id, { title: 'New Title' })
+
+// Soft delete
+deleteItem(id)
+
+// Permanent delete
+permanentDelete(id)
+
+// Folder operations
+getFolders()
+addFolder(name)
+updateFolder(id, { name: 'New Name' })
+deleteFolder(id)
+
+// Settings
+getSettings()
+updateSettings({ theme: 'dark' })</code></pre>
+
+    <h3>5.2 Auth Context</h3>
+    <pre><code>// Access auth state
+const { user, login, logout } = useAuth()</code></pre>
+
+    <hr>
+
+    <h2>6. Routes</h2>
+    <table>
+        <tr><th>Route</th><th>Component</th><th>Description</th></tr>
+        <tr><td>/login</td><td>Login</td><td>Login page</td></tr>
+        <tr><td>/signup</td><td>Signup</td><td>Registration page</td></tr>
+        <tr><td>/</td><td>Home</td><td>Dashboard</td></tr>
+        <tr><td>/category/:type</td><td>CategoryView</td><td>Category items</td></tr>
+        <tr><td>/folder/:id</td><td>FolderView</td><td>Folder items</td></tr>
+        <tr><td>/search</td><td>SearchPage</td><td>Search interface</td></tr>
+        <tr><td>/archive</td><td>ArchivePage</td><td>Archived items</td></tr>
+        <tr><td>/reminders</td><td>ReminderPage</td><td>Items with reminders</td></tr>
+        <tr><td>/trash</td><td>TrashPage</td><td>Deleted items</td></tr>
+        <tr><td>/settings</td><td>Settings</td><td>App settings</td></tr>
+        <tr><td>/help</td><td>HelpFeedback</td><td>Help & feedback</td></tr>
+    </table>
+
+    <hr>
+
+    <h2>7. Scripts</h2>
+
+    <h3>7.1 Available Commands</h3>
+    <table>
+        <tr><th>Command</th><th>Description</th></tr>
+        <tr><td>npm run dev</td><td>Start Vite dev server (port 5173)</td></tr>
+        <tr><td>npm run build</td><td>Build for production (outputs to dist/)</td></tr>
+        <tr><td>npm run preview</td><td>Preview production build</td></tr>
+        <tr><td>npm test</td><td>Run Vitest test suite once</td></tr>
+        <tr><td>npm run test:watch</td><td>Run tests in watch mode</td></tr>
+        <tr><td>npm run lint</td><td>Run ESLint</td></tr>
+    </table>
+
+    <h3>7.2 Quick Start</h3>
+    <pre><code># Install dependencies
+npm install
+
+# Start development server
+npm run dev
+
+# Open in browser
+# → http://localhost:5173
+
+# Build for production
+npm run build</code></pre>
+
+    <hr>
+
+    <h2>8. Testing</h2>
+
+    <h3>8.1 Test Structure</h3>
+    <ul>
+        <li>src/services/storage.test.js - localStorage CRUD operations</li>
+        <li>src/context/AuthContext.test.jsx - auth state management</li>
+        <li>src/components/AppLayout.test.jsx - layout rendering</li>
+        <li>src/pages/Login.test.jsx - login form behavior</li>
+        <li>src/pages/Home.test.jsx - dashboard rendering</li>
+        <li>src/pages/SearchPage.test.jsx - search filtering</li>
+    </ul>
+
+    <h3>8.2 Running Tests</h3>
+    <pre><code># Run all tests once
+npm test
+
+# Run tests in watch mode
+npm run test:watch
+
+# Run specific test file
+npm test -- Login
+npm test -- Home
+npm test -- SearchPage</code></pre>
+
+    <hr>
+
+    <h2>9. Component Reference</h2>
+
+    <h3>9.1 Layout Components</h3>
+    <table>
+        <tr><th>Component</th><th>Description</th></tr>
+        <tr><td>AppLayout</td><td>Main sidebar + header shell</td></tr>
+        <tr><td>ProtectedRoute</td><td>Authentication guard</td></tr>
+        <tr><td>ErrorBoundary</td><td>React error boundary</td></tr>
+    </table>
+
+    <h3>9.2 Modal Components</h3>
+    <table>
+        <tr><th>Component</th><th>Description</th></tr>
+        <tr><td>AddItemModal</td><td>Tab-switcher add form</td></tr>
+        <tr><td>EditModal</td><td>Edit title/desc/folder</td></tr>
+        <tr><td>ReminderModal</td><td>Date + time picker</td></tr>
+        <tr><td>ActionSheet</td><td>Right-click context menu</td></tr>
+    </table>
+
+    <h3>9.3 Display Components</h3>
+    <table>
+        <tr><th>Component</th><th>Description</th></tr>
+        <tr><td>ItemCard</td><td>Table row for items</td></tr>
+        <tr><td>Skeletons</td><td>Loading placeholders</td></tr>
+        <tr><td>Toast</td><td>Transient notifications</td></tr>
+    </table>
+
+    <hr>
+
+    <h2>10. Browser Support</h2>
+    <ul>
+        <li>Chrome (latest)</li>
+        <li>Firefox (latest)</li>
+        <li>Safari (latest)</li>
+        <li>Edge (latest)</li>
+    </ul>
+    <p>Requires JavaScript enabled and localStorage support.</p>
+
+    <hr>
+
+    <h2>11. License</h2>
+    <p>MIT License</p>
+
+    <hr>
+
+    <p style="text-align: center; margin-top: 40px; color: #666;">
+        <strong>KeepBox — Save everything that matters.</strong>
+    </p>
+
+    <p style="text-align: center; font-size: 12px; color: #999; margin-top: 10px;">
+        Generated: April 2026
+    </p>
+</body>
+</html>
