@@ -1,0 +1,10 @@
+# Node Modules
+node_modules/
+package-lock.json
+
+# Synthetic Data
+# If you want to commit the generated data, comment this out:
+# data/
+
+# Generated Files
+export_pdf.js
