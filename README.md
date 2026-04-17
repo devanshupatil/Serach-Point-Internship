@@ -20,6 +20,7 @@ This repository contains two full-stack web applications:
 |------|---------|-------------|
 | **Task-1** | KeepBox | Personal cloud storage and bookmark manager |
 | **Task-2** | Glow & Grace | Salon discovery and booking platform |
+| **Task-3** | Recommendation Engine | Smart ranking algorithm for Glow & Grace |
 
 ---
 
@@ -38,6 +39,12 @@ Search Point Task/
 │   ├── PLAN.md                 # Recommendation model plan
 │   ├── ui-react/               # Glow & Grace frontend
 │   └── README.md
+│
+├── Task-3/
+│   ├── data/                   # Generated synthetic datasets
+│   ├── api.js                  # Recommendation engine logic
+│   ├── generate_data.js        # Data simulation script
+│   └── Documentation.md        # Technical model documentation
 │
 └── README.md                   # This file
 ```
@@ -76,6 +83,19 @@ npm run dev
 
 # Build for production
 npm run build
+```
+
+### Task-3: Recommendation Engine
+
+```bash
+# Navigate to Engine
+cd Task-3/
+
+# Generate dataset
+node generate_data.js
+
+# Test API outputs
+node api.js
 ```
 
 ---
@@ -166,7 +186,26 @@ npm run build
 | **React 18** | UI Framework |
 | **Vite 5** | Build Tool & Dev Server |
 | **Pure CSS** | Styling with CSS Variables |
-| **Python** (Planned) | ML Model & API |
+| **Node.js** (Task-3) | Recommendation Engine |
+
+---
+
+## 🧠 Task-3: Recommendation Engine
+
+### 🎯 Overview
+
+The intelligent "brain" logically integrated with Glow & Grace, built natively in **Node.js**:
+
+- **Personalized Sorting:** Ranks salons based on dynamic user personas.
+- **Explainable Rules:** Weighted scoring factoring in distance, budget, and wait-time.
+- **Synthetic Modeling:** Custom deterministic data generation for testing.
+
+### ⚙️ Engine Structure
+
+| Script | Responsibility |
+|--------|----------------|
+| `generate_data.js` | Simulates localized shops, personas, and booking history |
+| `api.js` | Computes Content-Based scores dynamically without ML black-boxes |
 
 ---
 
@@ -201,15 +240,15 @@ npm run test:watch
 
 ## 📊 Project Comparison
 
-| Aspect | KeepBox | Glow & Grace |
-|--------|---------|--------------|
-| **Purpose** | Personal storage | Salon discovery |
-| **Auth** | ✅ Required | ✅ (Planned) |
-| **Data Storage** | localStorage | Backend API (Planned) |
-| **ML/AI** | ❌ None | ✅ Recommendation Engine |
-| **Styling** | Tailwind CSS | Pure CSS + Variables |
-| **Dark Mode** | ✅ Full support | ❌ Light only |
-| **Testing** | Vitest | ❌ (Planned) |
+| Aspect | KeepBox | Glow & Grace | Task-3 Engine |
+|--------|---------|--------------|---------------|
+| **Purpose** | Personal storage | Salon discovery | Ranking System |
+| **Auth** | ✅ Required | ✅ (Planned) | ❌ N/A |
+| **Data Storage** | localStorage | Backend API (Planned) | Local CSVs |
+| **ML/AI** | ❌ None | ✅ Built in Task-3 | ✅ Content-based |
+| **Styling** | Tailwind CSS | Pure CSS + Variables | ❌ CLI backend |
+| **Dark Mode** | ✅ Full support | ❌ Light only | ❌ N/A |
+| **Testing** | Vitest | ❌ (Planned) | ✅ Console Output |
 
 ---
 
